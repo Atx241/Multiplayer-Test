@@ -50,9 +50,9 @@ public class Weapon : NetworkBehaviour
         cam.fieldOfView = hipFireFOV / (scopedIn ? swd.zoom : 1);
         if (Input.GetButtonDown("Swap Weapon")) { selectedWeapon += Mathf.RoundToInt(Input.GetAxis("Swap Weapon")); selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weapons.Length - 1); }
         selectedWeaponText.text = swd.name;
-        cam.GetComponent<PlayerCamera>().yAngle -= nextRecoilPos.y * Time.deltaTime * recoilSpeed;
-        transform.root.localEulerAngles += new Vector3(0,nextRecoilPos.x * Time.deltaTime * recoilSpeed,0);
-        nextRecoilPos = Vector2.Lerp(nextRecoilPos,Vector2.zero,Time.deltaTime * recoilSpeed);
+        cam.GetComponent<PlayerCamera>().yAngle -= nextRecoilRot.y * Time.deltaTime * recoilSpeed;
+        transform.root.localEulerAngles += new Vector3(0,nextRecoilRot.x * Time.deltaTime * recoilSpeed,0);
+        nextRecoilRot = Vector2.Lerp(nextRecoilRot,Vector2.zero,Time.deltaTime * recoilSpeed);
         if (cooldown > 0)
         {
             cooldown -= Time.deltaTime;
