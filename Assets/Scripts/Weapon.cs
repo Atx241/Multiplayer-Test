@@ -20,6 +20,8 @@ public class Weapon : NetworkBehaviour
     private WeaponData swd;
     private List<GameObject> weaponPrefabs;
     private float hipFireFOV;
+    private float recoilSpeed = 38f;
+    private Vector2 nextRecoilPos;
     private void Start()
     {
         weaponPrefabs = new List<GameObject>();
@@ -48,14 +50,16 @@ public class Weapon : NetworkBehaviour
         cam.fieldOfView = hipFireFOV / (scopedIn ? swd.zoom : 1);
         if (Input.GetButtonDown("Swap Weapon")) { selectedWeapon += Mathf.RoundToInt(Input.GetAxis("Swap Weapon")); selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weapons.Length - 1); }
         selectedWeaponText.text = swd.name;
+        cam.GetComponent<PlayerCamera>().yAngle += nextRecoilPos.y * Time.deltaTime * recoilSpeed;
+        transform.root.localEulerAngles += new Vector3(0,nextRecoilPos.x * Time.deltaTime * recoilSpeed,0);
+        nextRecoilPos = Vector2.Lerp(nextRecoilPos,Vector2.zero,Time.deltaTime * recoilSpeed);
         if (cooldown > 0)
         {
             cooldown -= Time.deltaTime;
         }
         if ((swd.automatic ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) && cooldown <= 0)
         {
-            cam.GetComponent<PlayerCamera>().yAngle += Random.Range(-swd.recoil, swd.recoil);
-            transform.root.localEulerAngles += Vector3.up * Random.Range(-swd.recoil, swd.recoil);
+            nextRecoilPos = new Vector2(Random.Range(-swd.recoil, swd.recoil), Random.Range(-swd.recoil, swd.recoil)) + swd.recoil * swd.recoilBias;
             FireServerRpc();
             cooldown = 60 / swd.firerate;
         }
