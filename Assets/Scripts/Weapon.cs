@@ -20,6 +20,8 @@ public class Weapon : NetworkBehaviour
     private WeaponData swd;
     private List<GameObject> weaponPrefabs;
     private float hipFireFOV;
+    private float recoilSpeed = 38f;
+    private Vector2 nextRecoilRot;
     private void Start()
     {
         weaponPrefabs = new List<GameObject>();
@@ -52,10 +54,13 @@ public class Weapon : NetworkBehaviour
         {
             cooldown -= Time.deltaTime;
         }
+        cam.GetComponent<PlayerCamera>().yAngle -= nextRecoilRot.y * Time.deltaTime * recoilSpeed;
+        transform.root.eulerAngles += Vector3.up * nextRecoilRot.x * Time.deltaTime * recoilSpeed;
+        nextRecoilRot = Vector2.Lerp(nextRecoilRot, Vector2.zero, Time.deltaTime * recoilSpeed);
         if ((swd.automatic ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) && cooldown <= 0)
         {
-            cam.GetComponent<PlayerCamera>().yAngle += Random.Range(-swd.recoil, swd.recoil);
-            transform.root.localEulerAngles += Vector3.up * Random.Range(-swd.recoil, swd.recoil);
+            var rbias = swd.recoilBias;
+            nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
             FireServerRpc();
             cooldown = 60 / swd.firerate;
         }

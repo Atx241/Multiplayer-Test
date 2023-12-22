@@ -16,4 +16,7 @@ MonoBehaviour:
   firerate: 300
   automatic: 0
   recoil: 15
+  recoilBias: {x: 0, y: 1}
   weaponPrefab: {fileID: 3575283056252364481, guid: 155d863dfdd21b54a8a2ef114fbb2dc4, type: 3}
+  hasScope: 0
+  zoom: 1.25
