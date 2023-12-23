@@ -16,8 +16,8 @@ MonoBehaviour:
   firerate: 800
   automatic: 1
   recoil: 5
-  recoilBias: {x: 0.25, y: 1}
+  recoilBias: {x: -0.25, y: 1}
   weaponPrefab: {fileID: 5367213094731565652, guid: 03ef3d62d542ea149ab492aceee9d19e, type: 3}
   hasScope: 0
-  zoom: 1.25
-  audioClip: {fileID: 8300000, guid: fb6e154a44c2cd248b8006937099e471, type: 3}
+  zoom: 0.75
+  audioClip: {fileID: 8300000, guid: 065f7ae210126a04d9d649180c68042b, type: 3}
