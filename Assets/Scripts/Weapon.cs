@@ -74,11 +74,12 @@ public class Weapon : NetworkBehaviour
     void FireServerRpc()
     {
         var t = tip;
-        var a = new AudioSource();
+        var a = new GameObject().AddComponent<AudioSource>();
         a.AddComponent<NetworkObject>();
         a.clip = swd.audioClip;
         a.Play();
         a.GetComponent<NetworkObject>().Spawn();
+        Destroy(a.gameObject, 3);
         Physics.Raycast(t.transform.position, t.transform.forward,out hit,1000);
         if (hit.transform == null) return;
         GameObject hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);

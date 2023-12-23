@@ -20,3 +20,4 @@ MonoBehaviour:
   weaponPrefab: {fileID: 5302798607697145665, guid: da76130777b2d8548a9297fbeb90afb1, type: 3}
   hasScope: 0
   zoom: 1.25
+  audioClip: {fileID: 8300000, guid: 065f7ae210126a04d9d649180c68042b, type: 3}
