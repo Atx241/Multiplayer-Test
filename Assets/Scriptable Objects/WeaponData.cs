@@ -12,4 +12,5 @@ public class WeaponData : ScriptableObject
     public GameObject weaponPrefab;
     public bool hasScope;
     public float zoom = 1.25f;
+    public AudioClip audioClip;
 }

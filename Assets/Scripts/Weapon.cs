@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using Unity.Burst.CompilerServices;
+using Unity.VisualScripting;
 
 public class Weapon : NetworkBehaviour
 {
@@ -62,6 +63,7 @@ public class Weapon : NetworkBehaviour
         nextRecoilRot = Vector2.Lerp(nextRecoilRot, Vector2.zero, Time.deltaTime * recoilSpeed);
         if ((swd.automatic ? Input.GetButton("Fire1") : Input.GetButtonDown("Fire1")) && cooldown <= 0)
         {
+            
             var rbias = swd.recoilBias;
             nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
             FireServerRpc();
@@ -72,6 +74,11 @@ public class Weapon : NetworkBehaviour
     void FireServerRpc()
     {
         var t = tip;
+        var a = new AudioSource();
+        a.AddComponent<NetworkObject>();
+        a.clip = swd.audioClip;
+        a.Play();
+        a.GetComponent<NetworkObject>().Spawn();
         Physics.Raycast(t.transform.position, t.transform.forward,out hit,1000);
         if (hit.transform == null) return;
         GameObject hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);
