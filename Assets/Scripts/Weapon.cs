@@ -65,7 +65,7 @@ public class Weapon : NetworkBehaviour
             var rbias = swd.recoilBias;
             nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
             FireServerRpc();
-            cooldown = 60 / swd.firerate;
+            cooldown = 60f / swd.firerate;
         }
     }
     [ServerRpc]

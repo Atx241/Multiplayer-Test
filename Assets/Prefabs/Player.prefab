@@ -506,6 +506,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 098a7206fc6c7794b8e3c15cc60cfc16, type: 2}
   - {fileID: 11400000, guid: 955b115a90782ab4b9972b9f24e75280, type: 2}
   - {fileID: 11400000, guid: 2f7d1a3cbe8483a4c8257aa281b83139, type: 2}
+  - {fileID: 11400000, guid: 4388ab284868af244ad200e10f24a66c, type: 2}
+  - {fileID: 11400000, guid: fcba40b028c0aed45b980bed38da1782, type: 2}
+  - {fileID: 11400000, guid: 37ce79ceac5dc774e8f98d96ffcf9b24, type: 2}
   selectedWeapon: 0
   selectedWeaponText: {fileID: 6604018393813392686}
   scopeTexture: {fileID: 3688299791260583630}
