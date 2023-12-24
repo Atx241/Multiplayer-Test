@@ -28,7 +28,7 @@ namespace Unity.Netcode.Relay
                 await AuthenticationService.Instance.SignInAnonymouslyAsync();
             }
             Allocation allocation = await RelayService.Instance.CreateAllocationAsync(9);
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "udp"));
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(allocation, "wss"));
             var joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
             return NetworkManager.Singleton.StartHost() ? joinCode : null;
         }
@@ -50,7 +50,7 @@ namespace Unity.Netcode.Relay
             }
 
             var joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode: joinCode);
-            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "udp"));
+            NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(new RelayServerData(joinAllocation, "wss"));
             return !string.IsNullOrEmpty(joinCode) && NetworkManager.Singleton.StartClient();
         }
     }
