@@ -12,7 +12,7 @@ public class Weapon : NetworkBehaviour
     public GameObject hitObject;
     public Camera cam;
     public WeaponData[] weapons;
-    public int selectedWeapon;
+    public NetworkVariable<int> selectedWeapon = new NetworkVariable<int>(readPerm: NetworkVariableReadPermission.Everyone, writePerm: NetworkVariableWritePermission.Owner);
     public TMPro.TMP_Text selectedWeaponText;
     public GameObject scopeTexture;
     private RaycastHit hit;
@@ -40,9 +40,9 @@ public class Weapon : NetworkBehaviour
         {
             w.SetActive(false);
         }
-        weaponPrefabs[selectedWeapon].SetActive(true);
-        tip = weaponPrefabs[selectedWeapon].transform.Find("Tip");
-        swd = weapons[selectedWeapon];
+        weaponPrefabs[selectedWeapon.Value].SetActive(true);
+        tip = weaponPrefabs[selectedWeapon.Value].transform.Find("Tip");
+        swd = weapons[selectedWeapon.Value];
         if (!transform.root.GetComponent<NetworkObject>().IsLocalPlayer) return;
         if (Input.GetButtonDown("Fire2"))
         {
@@ -50,7 +50,7 @@ public class Weapon : NetworkBehaviour
         }
         scopeTexture.SetActive(scopedIn && swd.hasScope);
         cam.fieldOfView = hipFireFOV / (scopedIn ? swd.zoom : 1);
-        if (Input.GetButtonDown("Swap Weapon")) { selectedWeapon += Mathf.RoundToInt(Input.GetAxis("Swap Weapon")); selectedWeapon = Mathf.Clamp(selectedWeapon, 0, weapons.Length - 1); }
+        if (Input.GetButtonDown("Swap Weapon")) { selectedWeapon.Value += Mathf.RoundToInt(Input.GetAxis("Swap Weapon")); selectedWeapon.Value = Mathf.Clamp(selectedWeapon.Value, 0, weapons.Length - 1); }
         selectedWeaponText.text = swd.name;
         cam.GetComponent<PlayerCamera>().yAngle -= nextRecoilRot.y * Time.deltaTime * recoilSpeed;
         transform.root.localEulerAngles += new Vector3(0,nextRecoilRot.x * Time.deltaTime * recoilSpeed,0);
@@ -67,17 +67,18 @@ public class Weapon : NetworkBehaviour
             
             var rbias = swd.recoilBias;
             nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
-            Fire();
-            FireServerRpc();
+            Fire(1000ul);
+            FireServerRpc(OwnerClientId);
             cooldown = 60f / swd.firerate;
 
         }
     }
     [ServerRpc]
-    void FireServerRpc()
+    void FireServerRpc(ulong senderId)
     {
         FireClientRpc();
-        Fire();
+        Fire(senderId);
+        hitFx.GetComponent<NetworkObject>().Spawn();
         if (hit.transform.GetComponent<Health>())
         {
             hit.transform.GetComponent<Health>().health.Value -= swd.damage;
@@ -92,15 +93,28 @@ public class Weapon : NetworkBehaviour
         a.Play();
         Destroy(a.gameObject, 3);
     }
-    void Fire()
+    [ClientRpc]
+    void CheckHitFXClientRpc()
+    {
+        foreach (var obj in FindObjectsByType<GameObject>(FindObjectsSortMode.None))
+        {
+            if (obj.name == OwnerClientId.ToString())
+            {
+                Destroy(obj);
+            }
+        }
+    }
+    void Fire(ulong id)
     {
         Physics.Raycast(tip.transform.position, tip.transform.forward, out hit, 1000);
         if (hit.transform == null) return;
         hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);
+        hitFx.name = id.ToString();
         hitFx.transform.position = hit.point;
-        hitFx.GetComponent<NetworkObject>().Spawn();
+        CheckHitFXClientRpc();
         Destroy(hitFx, 0.05f);
     }
+    
 }
 public class NetworkTransformData : INetworkSerializable
 {
