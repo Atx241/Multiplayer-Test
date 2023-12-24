@@ -34,7 +34,6 @@ public class GameJoinCanvas : MonoBehaviour
     void Update()
     {
         joinCode = ipField.text.Substring(0, 6);
-        hostDataText.text = "External: " + GetExternalIPAddress() + "\n" + "Internal: " + GetInternalIPAddress();
         //NetworkManager.Singleton.GetComponent<UnityTransport>().SetConnectionData(ipField.text,ushort.TryParse(portField.text,out ushort result) ? result : (ushort)2417);
     }
     public async void StartHost()
