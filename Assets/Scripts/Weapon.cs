@@ -67,25 +67,21 @@ public class Weapon : NetworkBehaviour
             
             var rbias = swd.recoilBias;
             nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
-            hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);
+            Fire();
             FireServerRpc();
             cooldown = 60f / swd.firerate;
+
         }
     }
     [ServerRpc]
     void FireServerRpc()
     {
-        var t = tip;
         FireClientRpc();
-        Physics.Raycast(t.transform.position, t.transform.forward,out hit,1000);
-        if (hit.transform == null) return;
-        hitFx.transform.position = hit.point;
-        hitFx.GetComponent<NetworkObject>().Spawn();
+        Fire();
         if (hit.transform.GetComponent<Health>())
         {
             hit.transform.GetComponent<Health>().health.Value -= swd.damage;
         }
-        Destroy(hitFx,0.05f);
     }
     [ClientRpc]
     void FireClientRpc()
@@ -95,6 +91,15 @@ public class Weapon : NetworkBehaviour
         a.clip = swd.audioClip;
         a.Play();
         Destroy(a.gameObject, 3);
+    }
+    void Fire()
+    {
+        Physics.Raycast(tip.transform.position, tip.transform.forward, out hit, 1000);
+        if (hit.transform == null) return;
+        hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);
+        hitFx.transform.position = hit.point;
+        hitFx.GetComponent<NetworkObject>().Spawn();
+        Destroy(hitFx, 0.05f);
     }
 }
 public class NetworkTransformData : INetworkSerializable
