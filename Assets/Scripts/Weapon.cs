@@ -67,7 +67,7 @@ public class Weapon : NetworkBehaviour
             
             var rbias = swd.recoilBias;
             nextRecoilRot = new Vector2(Random.Range(-swd.recoil, swd.recoil),Random.Range(-swd.recoil, swd.recoil)) + Vector2.one * rbias * swd.recoil;
-            Fire(1000ul);
+            Fire();
             FireServerRpc(OwnerClientId);
             cooldown = 60f / swd.firerate;
 
@@ -90,6 +90,7 @@ public class Weapon : NetworkBehaviour
         var a = new GameObject().AddComponent<AudioSource>();
         a.AddComponent<NetworkObject>();
         a.clip = swd.audioClip;
+        a.name = "Shoot Sound";
         a.Play();
         Destroy(a.gameObject, 3);
     }
@@ -104,12 +105,12 @@ public class Weapon : NetworkBehaviour
             }
         }
     }
-    void Fire(ulong id)
+    void Fire(ulong id = ulong.MaxValue)
     {
         Physics.Raycast(tip.transform.position, tip.transform.forward, out hit, 1000);
         if (hit.transform == null) return;
         hitFx = Instantiate(hitObject, hit.point, Quaternion.identity);
-        hitFx.name = id.ToString();
+        hitFx.name = id == ulong.MaxValue ? "Client Hit FX" : id.ToString();
         hitFx.transform.position = hit.point;
         CheckHitFXClientRpc();
         Destroy(hitFx, 0.05f);
